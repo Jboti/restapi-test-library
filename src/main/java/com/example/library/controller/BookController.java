@@ -4,6 +4,7 @@ package com.example.library.controller;
 import com.example.library.dto.BookRequestDto;
 import com.example.library.dto.BookResponseDto;
 import com.example.library.service.BookService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,13 +37,13 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<BookResponseDto> createBook(@RequestBody BookRequestDto book) {
+    public ResponseEntity<BookResponseDto> createBook(@Valid @RequestBody BookRequestDto book) {
         BookResponseDto savedBook = bookService.createBook(book);
         return ResponseEntity.status(201).body(savedBook);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookResponseDto> updateBook(@PathVariable Long id, @RequestBody BookRequestDto book) {
+    public ResponseEntity<BookResponseDto> updateBook(@PathVariable Long id, @Valid @RequestBody BookRequestDto book) {
         return bookService.updateBook(id, book)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
