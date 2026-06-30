@@ -1,5 +1,7 @@
 package com.example.library.service;
 
+import com.example.library.dto.BookRequestDto;
+import com.example.library.dto.BookResponseDto;
 import com.example.library.entity.Book;
 import com.example.library.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -18,28 +21,39 @@ public class BookService {
         this.bookRepository = bookRepository;
     }
 
-    public List<Book> getBooks(){
-        return bookRepository.findAll();
+    public List<BookResponseDto> getBooks(){
+        return bookRepository.findAll()
+                .stream()
+                .map(this::toResponseDto)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Book> getBookById(Long id) {
-        return bookRepository.findById(id);
+    public Optional<BookResponseDto> getBookById(Long id) {
+        return bookRepository.findById(id)
+                .map(this::toResponseDto);
     }
 
-    public Book createBook(Book book) {
-        return bookRepository.save(book);
+    public BookResponseDto createBook(BookRequestDto newBook) {
+        Book book = new Book(
+            newBook.getTitle(),
+            newBook.getAuthor(),
+            newBook.getIsbn(),
+            newBook.getPublishedYear()
+        );
+        Book savedBook = bookRepository.save(book);
+        return toResponseDto(savedBook);
     }
 
-    public Optional<Book> updateBook(Long id, Book updateBook) {
+    public Optional<BookResponseDto> updateBook(Long id, BookRequestDto updateBook) {
         return bookRepository.findById(id)
                 .map(existingBook -> {
                     existingBook.setTitle(updateBook.getTitle());
                     existingBook.setAuthor(updateBook.getAuthor());
                     existingBook.setIsbn(updateBook.getIsbn());
                     existingBook.setPublishedYear(updateBook.getPublishedYear());
-                    existingBook.setAvailable(updateBook.isAvailable());
 
-                    return bookRepository.save(existingBook);
+                    Book savedBook = bookRepository.save(existingBook);
+                    return toResponseDto(savedBook);
                 });
     }
 
@@ -51,4 +65,15 @@ public class BookService {
         return false;
     }
 
+
+    private BookResponseDto toResponseDto(Book book) {
+        return new BookResponseDto(
+                book.getId(),
+                book.getTitle(),
+                book.getAuthor(),
+                book.getIsbn(),
+                book.getPublishedYear(),
+                book.isAvailable()
+        );
+    }
 }

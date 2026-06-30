@@ -1,7 +1,8 @@
 package com.example.library.controller;
 
 
-import com.example.library.entity.Book;
+import com.example.library.dto.BookRequestDto;
+import com.example.library.dto.BookResponseDto;
 import com.example.library.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,25 +24,25 @@ public class BookController {
     // Returning with simple list has less control over the response,
     // Spring infers this call as 200 OK
     @GetMapping
-    public List<Book> getAllBooks() {
+    public List<BookResponseDto> getAllBooks() {
         return bookService.getBooks();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getBook(@PathVariable Long id) {
+    public ResponseEntity<BookResponseDto> getBook(@PathVariable Long id) {
         return bookService.getBookById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Book> createBook(@RequestBody Book book) {
-        Book savedBook = bookService.createBook(book);
+    public ResponseEntity<BookResponseDto> createBook(@RequestBody BookRequestDto book) {
+        BookResponseDto savedBook = bookService.createBook(book);
         return ResponseEntity.status(201).body(savedBook);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book book) {
+    public ResponseEntity<BookResponseDto> updateBook(@PathVariable Long id, @RequestBody BookRequestDto book) {
         return bookService.updateBook(id, book)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
