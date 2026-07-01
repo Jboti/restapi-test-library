@@ -3,9 +3,11 @@ package com.example.library.service;
 import com.example.library.dto.BookRequestDto;
 import com.example.library.dto.BookResponseDto;
 import com.example.library.entity.Book;
+import com.example.library.exception.ResourceNotFoundException;
 import com.example.library.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,9 +30,10 @@ public class BookService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<BookResponseDto> getBookById(Long id) {
-        return bookRepository.findById(id)
-                .map(this::toResponseDto);
+    public BookResponseDto getBookById(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceAccessException("Book not found with id: " + id));
+        return toResponseDto(book);
     }
 
     public BookResponseDto createBook(BookRequestDto newBook) {
@@ -44,17 +47,15 @@ public class BookService {
         return toResponseDto(savedBook);
     }
 
-    public Optional<BookResponseDto> updateBook(Long id, BookRequestDto updateBook) {
-        return bookRepository.findById(id)
-                .map(existingBook -> {
-                    existingBook.setTitle(updateBook.getTitle());
-                    existingBook.setAuthor(updateBook.getAuthor());
-                    existingBook.setIsbn(updateBook.getIsbn());
-                    existingBook.setPublishedYear(updateBook.getPublishedYear());
+    public BookResponseDto updateBook(Long id, BookRequestDto updateBook) {
+        Book existingBook = bookRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
+        existingBook.setTitle(updateBook.getTitle());
+        existingBook.setAuthor(updateBook.getAuthor());
+        existingBook.setIsbn(updateBook.getIsbn());
+        existingBook.setPublishedYear(updateBook.getPublishedYear());
 
-                    Book savedBook = bookRepository.save(existingBook);
-                    return toResponseDto(savedBook);
-                });
+        return toResponseDto(bookRepository.save(existingBook));
     }
 
     public boolean deleteBook(Long id) {

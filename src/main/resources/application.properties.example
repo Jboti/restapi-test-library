@@ -1,6 +1,9 @@
 spring.application.name=library-api
 server.port=port
 
+server.error.include-stacktrace=never
+server.error.include-message=never
+
 spring.datasource.url=jdbc:postgresql://localhost:5432/db_name
 spring.datasource.username=user
 spring.datasource.password=password
