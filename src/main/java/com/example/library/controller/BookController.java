@@ -68,7 +68,7 @@ public class BookController {
             @Parameter(description = "ID of the book to delete")
             @PathVariable Long id
     ) {
-        boolean deleted = bookService.deleteBook(id);
-        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+        bookService.deleteBook(id);
+        return ResponseEntity.noContent().build();
     }
 }

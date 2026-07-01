@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,12 +57,11 @@ public class BookService {
         return toResponseDto(bookRepository.save(existingBook));
     }
 
-    public boolean deleteBook(Long id) {
-        if(bookRepository.existsById(id)) {
-            bookRepository.deleteById(id);
-            return true;
+    public void deleteBook(Long id) {
+        if(!bookRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Book not found with id: " + id);
         }
-        return false;
+        bookRepository.deleteById(id);
     }
 
 
