@@ -46,6 +46,18 @@ public class Loan {
         this.status = LoanStatus.ACTIVE;
     }
 
+    // ONLY FOR SEEDING / TESTING PURPOSES - TODO: DELETE LATER
+    public Loan(Book book, Member member, LocalDate borrowDate) {
+        this.book = book;
+        this.member = member;
+        this.borrowDate = borrowDate;
+        this.dueDate = borrowDate.plusDays(LOAN_PERIOD);
+        this.returnDate = null;
+        this.status = this.dueDate.isBefore(LocalDate.now())
+                ? LoanStatus.OVERDUE
+                : LoanStatus.ACTIVE;
+    }
+
     public Long getId() { return id; }
 
     public Book getBook() { return book; }
