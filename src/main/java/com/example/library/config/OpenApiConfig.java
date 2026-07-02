@@ -1,10 +1,20 @@
 package com.example.library.config;
 
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.HandlerMethod;
+
 
 @Configuration
 public class OpenApiConfig {
@@ -12,6 +22,12 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI libraryOpenAPI() {
         return new OpenAPI()
+                .components(new Components().addSecuritySchemes("ApiKeyAuth",
+                        new SecurityScheme()
+                                .type(SecurityScheme.Type.APIKEY)
+                                .in(SecurityScheme.In.HEADER)
+                                .name("X-API-Key")))
+                .addSecurityItem(new SecurityRequirement().addList("ApiKeyAuth"))
                 .info(
                     new Info()
                             .title("Library Management API")
@@ -25,5 +41,19 @@ public class OpenApiConfig {
                             )
 
                 );
+    }
+
+    @Bean
+    public OperationCustomizer customGlobalHeader() {
+        return (Operation operation, HandlerMethod handlerMethod) -> {
+            Parameter apiKeyHeader = new Parameter()
+                    .in(ParameterIn.HEADER.toString())
+                    .schema(new StringSchema())
+                    .name("X-API-Key")
+                    .description("API key required to access this endpoint")
+                    .required(true);
+            operation.addParametersItem(apiKeyHeader);
+            return operation;
+        };
     }
 }

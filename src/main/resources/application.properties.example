@@ -1,5 +1,6 @@
 spring.application.name=library-api
 server.port=port
+app.api-key=api_key
 
 server.error.include-stacktrace=never
 server.error.include-message=never
