@@ -30,7 +30,7 @@ public class Member {
     @Column(nullable = false)
     private boolean active = true;
 
-    public Member() {}
+    protected Member() {}
 
     public Member(String firstName, String lastName, String email, String phoneNumber) {
         this.firstName = firstName;

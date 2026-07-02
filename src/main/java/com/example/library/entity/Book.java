@@ -28,7 +28,7 @@ public class Book {
 
     // Constructors
 
-    public Book() {} // required
+    protected Book() {} // required
 
     public Book(String title, String author, String isbn, Integer publishedYear) {
         this.title = title;
