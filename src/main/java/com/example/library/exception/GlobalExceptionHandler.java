@@ -1,5 +1,7 @@
 package com.example.library.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,6 +13,8 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException e) {
@@ -28,6 +32,7 @@ public class GlobalExceptionHandler {
                 fieldErrors
         );
 
+        logger.warn("Validation failed: {}", fieldErrors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
@@ -38,6 +43,7 @@ public class GlobalExceptionHandler {
                 e.getMessage()
         );
 
+        logger.warn(e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).body(error);
     }
 
@@ -48,6 +54,7 @@ public class GlobalExceptionHandler {
                 e.getMessage()
         );
 
+        logger.warn(e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT.value()).body(error);
     }
 
@@ -59,6 +66,7 @@ public class GlobalExceptionHandler {
                 "An unexpected error has occurred"
         );
 
+        logger.error("Unexpected error: ",e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
